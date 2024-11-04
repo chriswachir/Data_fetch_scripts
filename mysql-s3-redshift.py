@@ -37,7 +37,7 @@ def setup_email():
     smtp_username = email_config['smtp_username']
     smtp_password = email_config['smtp_password']
     fromaddr = email_config['sender_email']
-    toaddr = 'christopher.wachira@cellulant.io'
+    toaddr = email_config['reciever_email']
     return smtp_host, smtp_port, smtp_username, smtp_password, fromaddr, toaddr
 
 
