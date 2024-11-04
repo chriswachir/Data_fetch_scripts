@@ -27,14 +27,14 @@ smtp_port = int(email_config['smtp_port'])
 smtp_username = email_config['smtp_username']
 smtp_password = email_config['smtp_password']
 fromaddr = email_config['sender_email']
-toaddr = 'christopher.wachira@cellulant.io'
+toaddr = email_config['reciever_email']
 slack_webhook_url = email_config['slack_webhook_url']
 
-#define target table
+# Define target table
 target = 'schema.table'
 
-# Function to delete data first and then insert data into Redshift
-def delete_and_insert_lake_data():
+# Function to insert data into Redshift
+def insert_lake_data():
     config = server_config('/config/r_validation.ini', 'redshift')
 
     try:
@@ -49,15 +49,10 @@ def delete_and_insert_lake_data():
                 data_start_point = yesterday.strftime("%Y-%m-%d %H:%M:%S")
                 data_end_point = today.strftime("%Y-%m-%d %H:%M:%S")
 
-                # SQL query to delete existing data
-                delete_query = f"DELETE FROM {target} WHERE pull_date = '{today_str}' AND source = '{source}'"
-                cur.execute(delete_query)
-                conn.commit()
-
                 # Direct INSERT INTO SELECT query to load data from source into target
                 insert_query = f"""
                 INSERT INTO {target} (
-                    column1, column2,....
+                    column1, column2, ....
                 )
                 SELECT
                   columns
@@ -72,7 +67,7 @@ def delete_and_insert_lake_data():
                 print(f"Data inserted successfully from {data_start_point} to {data_end_point}")
 
     except Exception as e:
-        send_notification(f"Failed to delete and insert data: {str(e)}", slack_webhook_url)
+        send_notification(f"Failed to insert data: {str(e)}", slack_webhook_url)
         raise
 
 # Function to send email and Slack alerts
@@ -100,4 +95,4 @@ def send_notification(message, webhook_url):
         print(f"Failed to send notification: {str(e)}")
 
 if __name__ == "__main__":
-    delete_and_insert_lake_data()
+    insert_lake_data()
