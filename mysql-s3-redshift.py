@@ -11,6 +11,8 @@ import os
 import csv
 import requests
 
+# set the target table
+target = schema.table
 
 # Function to read server configuration
 def server_config(filename, section):
